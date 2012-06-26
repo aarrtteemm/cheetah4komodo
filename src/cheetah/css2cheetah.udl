@@ -1,0 +1,25 @@
+family css
+
+state IN_CSS_DSTRING:
+/#\*/: paint(upto, CSS_STRING), spush_check(IN_CSS_DSTRING) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSS_STRING), spush_check(IN_CSS_DSTRING) => IN_TPL_COMMENT
+'#'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_DSTRING) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_DSTRING) => IN_TPL_INLINE
+
+state IN_CSS_SSTRING:
+/#\*/: paint(upto, CSS_STRING), spush_check(IN_CSS_SSTRING) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSS_STRING), spush_check(IN_CSS_SSTRING) => IN_TPL_COMMENT
+'#'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_SSTRING) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_SSTRING) => IN_TPL_INLINE
+
+state IN_CSS_DEFAULT:
+/#\*/: paint(upto, CSS_STRING), spush_check(IN_CSS_DEFAULT) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSS_STRING), spush_check(IN_CSS_DEFAULT) => IN_TPL_COMMENT
+'#'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_DEFAULT) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_DEFAULT) => IN_TPL_INLINE
+
+state IN_CSS_COMMENT_1:
+/#\*/: paint(upto, CSS_STRING), spush_check(IN_CSS_COMMENT_1) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSS_STRING), spush_check(IN_CSS_COMMENT_1) => IN_TPL_COMMENT
+'#'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_COMMENT_1) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSS_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSS_COMMENT_1) => IN_TPL_INLINE

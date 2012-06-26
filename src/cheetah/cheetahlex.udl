@@ -1,0 +1,162 @@
+# Lexer for Cheetah -- a python-based template language
+
+
+# How to transition from HTML to Cheetah
+
+# ${ variables/values (in Cheetah) }
+# -- could occur in attribute strings as well
+
+family tpl
+sublanguage Cheetah
+
+start_style TPL_DEFAULT
+end_style TPL_VARIABLE
+
+keyword_style TPL_IDENTIFIER => TPL_WORD
+
+keywords [and,
+del,
+for,
+is,
+raise,
+assert,
+elif,   
+from,    
+lambda,  
+return,
+break,   
+else,   
+global,  
+not,     
+try,   
+class,   
+except, 
+if,      
+or,      
+while,
+continue,
+exec,   
+import,  
+pass,
+def,     
+finally,
+in,      
+print,
+end,
+set,
+block,
+cache,
+yield,
+encoding,
+echo
+]
+
+pattern NMSTART = '_\w'   # inside cset
+pattern CS = '$NMSTART\d'   # inside cset
+pattern WS = '\s\t'           # inside cset
+pattern OP = '~!@%^&*()-=+[\]{}\\|;:,.<>/`$'
+
+initial IN_TPL_DEFAULT
+
+state IN_TPL_DEFAULT:
+
+/[$WS]+/  : #stay
+/\\./     : #stay, eat slashed newline
+'"'       : paint(upto, TPL_DEFAULT), => IN_TPL_DSTRING
+'\''      : paint(upto, TPL_DEFAULT), => IN_TPL_SSTRING
+'$'       : paint(upto, TPL_DEFAULT) => IN_TPL_FINISH_DOLLAR
+
+# Go process a number, try to do it in regexes
+# octal and hex first
+/0[Xx][0-9a-fA-F]+/ : paint(upto, TPL_DEFAULT), paint(include, TPL_NUMBER)
+/[-+]?0[0-7]*/ : paint(upto, TPL_DEFAULT), paint(include, TPL_NUMBER)
+/[1-9]/ : paint(upto, TPL_DEFAULT), => IN_TPL_NUMBER_1
+/\.\d+/ : paint(upto, TPL_DEFAULT), => IN_TPL_NUMBER_2
+
+/[$NMSTART][$CS]*/ : paint(upto, TPL_DEFAULT), paint(include, TPL_IDENTIFIER)
+
+/[$OP]/ : paint(upto, TPL_DEFAULT), paint(include, TPL_OPERATOR) #stay
+
+
+################ Comments ################
+
+state IN_TPL_COMMENT :
+/[^\r\n]+/ : #stay
+
+################# Post-$ identifiers
+
+state IN_TPL_FINISH_DOLLAR:
+/^\{/ : paint(include, TPL_IDENTIFIER), => IN_TPL_FINISH_DOLLAR_EXTENDED
+/[$CS()[\]''""]+/ : #stay
+/./ : redo, paint(upto, TPL_IDENTIFIER) => IN_TPL_DEFAULT
+
+state IN_TPL_FINISH_DOLLAR_EXTENDED:
+'}' : paint(upto, TPL_IDENTIFIER) => IN_TPL_DEFAULT
+/[$CS()[\]''""]+/ : #stay
+/./ : redo, paint(upto, TPL_IDENTIFIER) => IN_TPL_DEFAULT
+
+################ Strings ################
+
+# a copy from Pythonlex
+state IN_TPL_SSTRING
+/\\[\r\n]/ : => IN_TPL_SSTRING_LINECONT
+/\\./ : # ""
+/$/ : paint(upto, TPL_STRING), => IN_TPL_DEFAULT  # No EOLString in UDL
+"'" : paint(include, TPL_STRING), => IN_TPL_DEFAULT
+
+state IN_TPL_DSTRING
+/\\[\r\n]/ : => IN_TPL_DSTRING_LINECONT
+/\\./ : # ""
+/$/ : paint(upto, TPL_STRING), => IN_TPL_DEFAULT  # No EOLString in UDL
+'"' : paint(include, TPL_STRING), => IN_TPL_DEFAULT
+
+state IN_TPL_SSTRING_LINECONT:
+/\\[\r\n]/ : #stay
+/\\./ : => IN_TPL_SSTRING
+"'" : paint(include, TPL_STRING), => IN_TPL_DEFAULT
+/./ : => IN_TPL_SSTRING
+/^$/ : paint(upto, TPL_STRING), => IN_TPL_DEFAULT # End empty lines here
+
+state IN_TPL_DSTRING_LINECONT:
+/\\[\r\n]/ : #stay
+/\\./ : => IN_TPL_DSTRING
+'"' : paint(include, SSL_STRING), => IN_TPL_DEFAULT
+/./ : => IN_TPL_DSTRING
+/^$/ : paint(upto, TPL_STRING), => IN_TPL_DEFAULT # End empty lines here
+################ Numbers ################
+
+include "tpl_number.udl"
+
+############# Placeholders ##############
+
+state IN_TPL_INLINE:
+/^\{/ : paint(include, TPL_IDENTIFIER), => IN_TPL_FINISH_INLINE_EXTENDED
+/[$CS()[\]''""]+/ : #stay
+
+state IN_TPL_FINISH_INLINE_EXTENDED:
+'}' : paint(upto, TPL_IDENTIFIER) => IN_TPL_INLINE
+/[$CS()[\]''""]+/ : #stay
+
+################ Folding Directives ################
+fold "{" TPL_OPERATOR +
+fold "}" TPL_OPERATOR -
+fold "[" TPL_OPERATOR +
+fold "]" TPL_OPERATOR -
+fold "(" TPL_OPERATOR +
+fold ")" TPL_OPERATOR -
+
+#fold "#*" TPL_WORD +
+#fold "#def" TPL_WORD +
+#fold "#for" TPL_WORD +
+#fold "#if" TPL_WORD +
+#fold "#while" TPL_WORD +
+#fold "#block" TPL_WORD +
+#fold "#cache" TPL_WORD +
+
+#fold "*#" TPL_WORD -
+#fold "#end def" TPL_WORD -
+#fold "#end for" TPL_WORD -
+#fold "#end if" TPL_WORD -
+#fold "#end while" TPL_WORD -
+#fold "#end block" TPL_WORD -
+#fold "#end cache" TPL_WORD -

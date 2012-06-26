@@ -1,0 +1,34 @@
+# See php-smarty-lex.udl for an explanation of how to build a
+# multi-language Luddite file
+
+include "html2js.udl"
+
+include "html2css.udl"
+
+include "cheetah/html2python.udl"
+
+include "cheetah/html2cheetah.udl"
+
+include "cheetah/css2cheetah.udl"
+
+include "cheetah/js2cheetah.udl"
+
+
+
+include "css2html.udl"
+
+include "js2html.udl"
+
+include "cheetah/python2html.udl"
+
+include "cheetah/cheetah2html.udl"
+
+
+language Cheetah
+
+include "html.udl"
+include "csslex.udl"
+include "jslex.udl"
+include "pythonlex.udl"
+
+include "cheetah/cheetahlex.udl"

@@ -1,0 +1,19 @@
+# And back
+
+family tpl
+
+state IN_TPL_COMMENTBLOCK:
+/\*#/ : paint(include, TPL_COMMENT), spop_check => IN_M_DEFAULT
+
+state IN_TPL_COMMENT:
+/\r/: paint(include, TPL_COMMENT), spop_check => IN_M_DEFAULT
+/$/ : paint(include, TPL_COMMENT), spop_check => IN_M_DEFAULT
+
+state IN_TPL_DEFAULT:
+/^\s/ : paint(upto, M_DEFAULT), spop_check => IN_M_DEFAULT
+'#' : paint(upto, TPL_DEFAULT), paint(include, TPL_OPERATOR), spop_check => IN_M_DEFAULT
+/\r/: paint(include, TPL_DEFAULT), spop_check => IN_M_DEFAULT
+/$/ : paint(include, TPL_DEFAULT), spop_check => IN_M_DEFAULT
+
+state IN_TPL_INLINE:
+/(?=[^_\w\d()[\]''""])/ : paint(upto, TPL_IDENTIFIER), spop_check, => IN_M_DEFAULT

@@ -1,0 +1,20 @@
+family csl
+
+state IN_CSL_DSTRING:
+/#\*/: paint(upto, CSL_STRING), spush_check(IN_CSL_DSTRING) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSL_STRING), spush_check(IN_CSL_DSTRING) => IN_TPL_COMMENT
+'#'  : paint(upto, CSL_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSL_DSTRING) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSL_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSL_DSTRING) => IN_TPL_INLINE
+
+state IN_CSL_SSTRING:
+/#\*/: paint(upto, CSL_STRING), spush_check(IN_CSL_SSTRING) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSL_STRING), spush_check(IN_CSL_SSTRING) => IN_TPL_COMMENT
+'#'  : paint(upto, CSL_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSL_SSTRING) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSL_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSL_SSTRING) => IN_TPL_INLINE
+
+state IN_CSL_DEFAULT:
+/#\*/: paint(upto, CSL_STRING), spush_check(IN_CSL_DEFAULT) => IN_TPL_COMMENTBLOCK
+/##/ : paint(upto, CSL_STRING), spush_check(IN_CSL_DEFAULT) => IN_TPL_COMMENT
+'#'  : paint(upto, CSL_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSL_DEFAULT) => IN_TPL_DEFAULT
+'$'  : paint(upto, CSL_STRING), paint(include, TPL_OPERATOR), spush_check(IN_CSL_DEFAULT) => IN_TPL_INLINE
+

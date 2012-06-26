@@ -1,0 +1,23 @@
+
+family ssl
+
+# End the <% ... %>
+
+state IN_SSL_DEFAULT:
+'%>' : paint(upto, SSL_DEFAULT), paint(include, SSL_OPERATOR), spop_check => IN_M_DEFAULT
+
+state IN_SSL_SSTRING:
+'%>' : paint(upto, SSL_STRING), paint(include, SSL_OPERATOR), spop_check => IN_M_DEFAULT
+
+state IN_SSL_DSTRING:
+'%>' : paint(upto, SSL_STRING), paint(include, SSL_OPERATOR), spop_check => IN_M_DEFAULT
+
+state IN_SSL_TRIPLE_SSTRING:
+'%>' : paint(upto, SSL_STRING), paint(include, SSL_OPERATOR), spop_check => IN_M_DEFAULT
+
+state IN_SSL_TRIPLE_DSTRING:
+'%>' : paint(upto, SSL_STRING), paint(include, SSL_OPERATOR), spop_check => IN_M_DEFAULT
+
+state IN_SSL_COMMENT:
+'%>' : paint(upto, SSL_COMMENT), paint(include, SSL_OPERATOR), spop_check => IN_M_DEFAULT
+
