@@ -1,11 +1,5 @@
 # Lexer for Cheetah -- a python-based template language
 
-
-# How to transition from HTML to Cheetah
-
-# ${ variables/values (in Cheetah) }
-# -- could occur in attribute strings as well
-
 family tpl
 sublanguage Cheetah
 
@@ -48,7 +42,20 @@ block,
 cache,
 yield,
 encoding,
-echo
+echo,
+"include",
+slurp,
+unless,
+repeat,
+attr,
+raw,
+extends,
+implements,
+catch,
+errorCatcher,
+breakpoint,
+silent,
+filter
 ]
 
 pattern NMSTART = '_\w'   # inside cset
